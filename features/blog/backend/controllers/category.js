@@ -37,14 +37,14 @@ module.exports = function (controller, component, app) {
             },
             {
                 column: 'description',
-                header: 'Description',
+                header: __('all_table_column_desc'), 
                 filter: {
                     data_type: 'string'
                 }
             },
             {
                 column: 'count',
-                header: 'Count',
+                header: __('all_table_column_count'),
                 width: '10%',
                 filter: {
                     data_type: 'number'

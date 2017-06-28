@@ -9,7 +9,7 @@ module.exports = function (controller, component, application) {
         // Create setting form
         let form = new ArrowHelper.WidgetForm(widget);
         form.addText('title', 'Title');
-        form.addText('id_posts', 'Ip posts (Eg: 1, 5, 2)');
+        form.addText('id_posts', 'Id posts (Eg: 1, 5, 2)');
         form.addCheckbox('display_date', 'Display date');
         form.addSelect('layout', 'Layout', layouts);
 

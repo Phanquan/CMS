@@ -24,12 +24,12 @@ module.exports = function (component) {
         },
 
         // Archive router
-        "/blog/posts/archives/:year([0-9]{4})/:month([0-9]{2})(/)?": {
+        "/blog/posts/archives/:year([0-9]{4})/:month([0-9]{1}|[0-9]{2})(/)?": {
             get: {
                 handler: controller.listArchive
             }
         },
-        "/blog/posts/archives/:year([0-9]{4})/:month([0-9]{2})/page-:page([0-9])(/)?": {
+        "/blog/posts/archives/:year([0-9]{4})/:month([0-9]{1}|[0-9]{2})/page-:page([0-9])(/)?": {
             get: {
                 handler: controller.listArchive
             }

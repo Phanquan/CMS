@@ -1,0 +1,10 @@
+{% if published_time | length %}
+<li class="menu-box">
+  <span class="title-list thoi-gian-title">{{ widget.title | safe }}</span>
+  <ul class="thoi-gian">
+    {% for item in published_time %}
+    <li><a href="/blog/posts/archives/{{item.published_year}}/{{item.published_month}}">Tháng {{item.published_month}}, {{item.published_year}} ({{item.count}})</a></li>
+    {% endfor %}
+  </ul>
+</li>
+{% endif %}

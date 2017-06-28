@@ -1,0 +1,44 @@
+{
+  "information": {
+    "theme_name": "Mobileshop",
+    "author": "techmastervn",
+    "version": "1.0",
+    "description": "Free Responsive Mobile Shop Template"
+  },
+  "sidebars": [
+    {
+      "name": "main-menu",
+      "title": "Main Menu"
+    },
+    {
+      "name": "slider",
+      "title": "Slider"
+    },
+    {
+      "name": "left-sidebar",
+      "title": "Left Sidebar of Product"
+    },
+    {
+      "name": "right-sidebar",
+      "title": "Right Sidebar of Blog"
+    },
+    {
+      "name": "blog-sidebar",
+      "title": "Blog Right Sidebar of Index"
+    },
+    {
+      "name": "bottom-posts",
+      "title": "Recommended Posts of Blog Post"
+    }
+  ],
+  "menus": [
+    {
+      "name": "main_menu",
+      "title": "Main menu"
+    },
+    {
+      "name": "left_menu",
+      "title": "Left menu"
+    }
+  ]
+}

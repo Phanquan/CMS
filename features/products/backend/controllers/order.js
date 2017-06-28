@@ -36,9 +36,9 @@ module.exports = function (controller, component, application) {
             {
                 column: 'name',
                 width: '19%',
-                header: 'Tên khách hành',
+                header: __('all_table_column_customer'),
                 link: 'javascript:orderDetail({id});',
-                acl: 'order',
+                acl: 'order', // when a table column has acl value -> it has link attached to it
                 filter: {
                     data_type: 'string'
                 }
@@ -46,7 +46,7 @@ module.exports = function (controller, component, application) {
             {
                 column: 'email',
                 width: '15%',
-                header: 'E-Mail',
+                header: __('all_table_column_email'),
                 type: 'number',
                 filter: {
                     data_type: 'integer',
@@ -56,7 +56,7 @@ module.exports = function (controller, component, application) {
             {
                 column: 'phone',
                 width: '15%',
-                header: 'Điện thoại',
+                header: __('all_table_column_phone'),
                 type: 'integer',
                 filter: {
                     type: 'integer',
@@ -66,7 +66,7 @@ module.exports = function (controller, component, application) {
             {
                 column: 'address',
                 width: '33%',
-                header: 'Địa chỉ',
+                header: __('all_table_column_address'),
                 type: 'integer',
                 filter: {
                     type: 'string',
@@ -76,27 +76,27 @@ module.exports = function (controller, component, application) {
             {
                 column: 'status',
                 width: '10%',
-                header: 'Tình trạng',
+                header: __('all_table_column_status'),
                 type: 'custom',
                 alias: {
-                    "2": "<span class=\"label label-primary\">Đã thanh toán</span>",
-                    "1": "<span class=\"label label-warning\">Đang giao hàng</span>",
-                    "0": "<span class=\"label label-danger\">Chưa xác nhận</span>"
+                    "2": __('m_product_backend_views_order_status_option_completed'),
+                    "1": __('m_product_backend_views_order_status_option_shipping'),
+                    "0": __('m_product_backend_views_order_status_option_pending')
                 },
                 filter: {
                     type: 'select',
                     filter_key: 'status',
                     data_source: [
                         {
-                            name: 'Đã thanh toán',
+                            name: __('m_product_backend_views_order_status_option_completed'),
                             value: 2
                         },
                         {
-                            name: 'Đang giao hàng',
+                            name: __('m_product_backend_views_order_status_option_shipping'),
                             value: 1
                         },
                         {
-                            name: 'Chưa xác nhận',
+                            name: __('m_product_backend_views_order_status_option_pending'),
                             value: 0
                         }
                     ],
@@ -124,7 +124,7 @@ module.exports = function (controller, component, application) {
 
             // Render view
             res.backend.render('order/index', {
-                title: 'Danh sách đơn hàng',
+                title: __('m_product_backend_module_menu_backend_menu_order_index'),
                 totalPage: totalPage,
                 items: results.rows,
                 currentPage: page,
@@ -135,7 +135,7 @@ module.exports = function (controller, component, application) {
             req.flash.error('Name: ' + error.name + '<br />' + 'Message: ' + error.message);
             // Render view if has error
             res.backend.render(req, res, 'order/index', {
-                title: 'Danh sách đơn hàng',
+                title: __('m_product_backend_module_menu_backend_menu_order_index'),
                 totalPage: 1,
                 items: null,
                 currentPage: page
@@ -144,7 +144,6 @@ module.exports = function (controller, component, application) {
     };
 
     controller.orderUpdate = function (req,res) {
-
         let id = req.body.id || 0 ;
         application.models.order.update({
                 status : req.body.status || 0
@@ -156,7 +155,7 @@ module.exports = function (controller, component, application) {
             }
         ).then(function (result) {
             if(result > 0){
-                res.send(req.body.status);
+                res.send(result);
             }else{
                 res.send(null);
             }

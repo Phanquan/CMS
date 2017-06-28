@@ -1,0 +1,138 @@
+{% extends '_layout.' + getConfig('viewExtension') %}
+{% block head %}
+<link href="/frontend/Mobileshop/assets/css/danh-sach-style.css" rel="stylesheet">
+<link href="/frontend/Mobileshop/assets/css/chi-tiet-style.css" rel="stylesheet">
+<script type="text/javascript" src="/frontend/Mobileshop/assets/js/detail-js.js"></script>
+<script src="/frontend/Mobileshop/assets/owlcarousel/owl.carousel.min.js"></script>
+<script src="/frontend/Mobileshop/assets/owlcarousel/carousel.js"></script>
+{% endblock %}
+
+{% block content %}
+<section class="container" id="list-page">
+	<div class="row mot-hang" style="margin-bottom:30px;">
+		<a href="/products" class="big-title big-title-list-page">ĐIỆN THOẠI</a>
+		<span></span>
+	</div>
+
+	<div class="row">
+		<aside class="col-md-2 list-menu-box">
+             {{ getSidebar("left-sidebar") | async | safe }}
+		</aside> <!-- end list-menu-box -->
+
+		<div class="col-md-7 produce-detail">
+			<h2 class="name-product">{{detail.product_name}}</h2>
+		</div>
+
+		<div class="col-md-7 produce-detail">
+			<div class="image-product-box">
+
+				<div class="mau mau0">
+                    
+					{% for image in images %}
+					{% if loop.first %}
+						<img class="product-big-image showImageAfterOnclick" src="{{ image }}">
+					{% else %}
+						<img class="product-sm-image ClickEvent" src="{{ image }}">
+					{% endif %}
+					{% endfor%}
+				</div>
+			</div>
+
+		</div>
+
+		<div class="col-md-3 col-xs-12 produce-detail-2">
+			{% if product.price_sale == 0 %}
+			<h2 class="price-product"> {{item.price| vnd('vi-VN')}} VNĐ</h2>
+			{% else %}
+			<h2 class="price-product" style="text-decoration: line-through;"> {{item.price| vnd('vi-VN')}} VNĐ</h2>
+			<h2 class="price-product"> {{item.price_sale| vnd('vi-VN')}} VNĐ</h2>
+			{% endif %}
+			<p class="code">Mã sản phẩm:<span>{{item.id}}</span></p>
+			<ul class="promotion">
+				<li>
+					{{ item.desc | safe }}
+				</li>
+			</ul>
+
+			<p class="quantity color-text"> Hiện có : {{item.quantity}} sản phẩm</p>
+
+			<span class="buy product-buy-box"><a href="javascript:add_cart({{ product.id }})">MUA HÀNG</a></span>
+			<!--<span class="buy product-buy-box added">Đã thêm vào giỏ hàng</span>-->
+
+		</div>
+
+		<div class="col-md-7 col-sm-12 col-sx-12 produce-detail detail-product-box">
+			<h3>Thông số kỹ thuật </h3>
+			<ul class="cau-hinh-don-gian">
+				{{item.desc}}
+			</ul>
+			<button class="watch-more">Xem cấu hình chi tiết</button>
+			<ul class="cau-hinh-chi-tiet">
+				{{item.content}}
+			</ul>
+			<button class="watch-more close-button">Đóng</button>
+
+		</div>
+
+	</div>
+	<!-- end col-->
+	</div>
+	<!-- end row -->
+
+	<!-- HẾT CỘT NÀY RỒI  //////////////////////////////////////////////////////////////////////////////////////////// -->
+	<div class="container">
+		<div class="row mot-hang">
+			<a href="/products" class="big-title">SẢN PHẨM TƯƠNG TỰ</a>
+			<span></span>
+		</div>
+		<!-- end row -->
+
+		<div class="row">
+			<div class="owl-carousel">
+				{% for product in recommended %}
+				<div class="owl-carousel-slide">
+					<div class="product-box ph">
+						<img src="">
+						<div class="name-price">
+							<p class="name-product">{{product.title}}</p>
+							{% if product.price_sale == 0 %}
+							<p class="price-product">{{product.price| vnd('vi-VN')}} VNĐ</p>
+							{% else %}
+							<p class="price-product" style="text-decoration: line-through;">{{product.price| vnd('vi-VN')}} VNĐ</p>
+							<p class="price-product">{{product.price_sale| vnd('vi-VN')}} VNĐ</p>
+							{% endif%}
+							<div class="info-product info-ph">
+								<div>
+									<p>{{product.title}}</p>
+									 {% if product.price_sale == 0 %}
+									<p>{{product.price| vnd('vi-VN')}} VNĐ</p>
+									 {% else %}
+									<p style="text-decoration: line-through;">{{product.price| vnd('vi-VN')}} VNĐ</p>
+									<p>{{product.price_sale| vnd('vi-VN')}} VNĐ</p>
+									 {% endif %}
+									<span></span>
+									<p>{{ product.desc }}</p>
+				
+								</div>
+								<a href="/products/detail/{{product.id}}" class="watch">Xem chi tiết</a>
+								<span class="buy"><a href="javascript:add_cart({{ product.id }})">Mua hàng</a></span>
+								<span class="buy added">Đã thêm vào giỏ hàng</span>
+							</div>
+							<!-- end info-box -->
+						</div>
+						<!-- end name-price -->
+					</div>
+					<!-- end product-box -->
+				</div>
+				{% endfor %}
+
+			</div>
+			<!-- end owl-carousel -->
+		</div>
+		<!-- end row -->
+		<!-- HẾT HÀNG NÀY RÔI / HẾT HÀNG NÀY RÔI / HẾT HÀNG NÀY RÔI / HẾT HÀNG NÀY RÔI /-->
+	</div>
+
+</section>
+
+{% endblock %}

@@ -1,6 +1,6 @@
 'use strict';
 
-let promise = require('arrowjs').Promise;
+const promise = require('arrowjs').Promise;
 
 module.exports = function (controller, component, application) {
 
@@ -30,21 +30,21 @@ module.exports = function (controller, component, application) {
                 })
             ]
         ).then(function (results) {
-                if (results[0]) {
-                    let totalPage = Math.ceil(results[0].count / itemOfPage);
-                    res.frontend.render('products', {
-                        products: results[0].rows,
-                        recommended: results[1],
-                        totalPage: totalPage,
-                        currentPage: page
-                    })
-                } else {
-                    res.frontend.render404(req, res);
-                }
-            }).catch(function (err) {
-                console.log(err);
-                res.frontend.render('_404');
-            });
+            if (results[0]) {
+                let totalPage = Math.ceil(results[0].count / itemOfPage);
+                res.frontend.render('products', {
+                    products: results[0].rows,
+                    recommended: results[1],
+                    totalPage: totalPage,
+                    currentPage: page
+                })
+            } else {
+                res.frontend.render404(req, res);
+            }
+        }).catch(function (err) {
+            console.log(err);
+            res.frontend.render('_404');
+        });
     };
 
     controller.listByCategory = function (req, res) {
@@ -78,21 +78,22 @@ module.exports = function (controller, component, application) {
                 })
             ]
         ).then(function (results) {
-                if (results[0]) {
-                    let totalPage = Math.ceil(results[0].count / itemOfPage);
-                    res.frontend.render('products', {
-                        products: results[0].rows,
-                        recommended: results[1],
-                        category: results[2],
-                        totalPage: totalPage,
-                        currentPage: page
-                    })
-                } else {
-                    res.frontend.render('404');
-                }
-            }).catch(function (err) {
-                res.frontend.models.render('404');
-            });
+            if (results[0]) {
+                let totalPage = Math.ceil(results[0].count / itemOfPage);
+
+                res.frontend.render('products', {
+                    products: results[0].rows,
+                    recommended: results[1],
+                    category: results[2],
+                    totalPage: totalPage,
+                    currentPage: page
+                })
+            } else {
+                res.frontend.render('404');
+            }
+        }).catch(function (err) {
+            res.frontend.models.render('404');
+        });
     };
 
     controller.detail = function (req, res) {
@@ -103,7 +104,7 @@ module.exports = function (controller, component, application) {
                     include: [
                         {
                             model: application.models.user,
-                            attributes: ['id', 'display_name', 'user_login', 'user_email', 'user_image_url']
+                            attributes: ['id', 'display_name', 'user_email', 'user_image_url']
                         }
                     ],
                     where: {
@@ -121,7 +122,7 @@ module.exports = function (controller, component, application) {
                             $gt: 0
                         }
                     },
-                    limit: 3,
+                    limit: 5,
                     order: 'id DESC'
                 })
             ]
@@ -133,32 +134,35 @@ module.exports = function (controller, component, application) {
                 application.models.product.update({
                     count_views: count_views
                 }, {
-                    where: {
-                        id: results[0].id
-                    }
-                }).then(function (re) {
-                    // Render view
-                    let images = results[0].images.split(':::');
-                    res.frontend.render('detail', {
-                        item: results[0],
-                        categories: results[1].rows,
-                        recommended: results[2],
-                        images: images
-                    });
-                })
+                        where: {
+                            id: results[0].id
+                        }
+                    }).then(function (re) {
+                        // Render view
+                        let images = results[0].images.split(':::');
+                        res.frontend.render('detail', {
+                            item: results[0],
+                            categories: results[1].rows,
+                            recommended: results[2],
+                            images: images
+                        });
+                    })
             } else {
                 // Redirect to 404 if post not exist
-                res.frondend.render('404');
+                res.frondend.render('_404');
             }
         }).catch(function (err) {
-            res.frondend.render('404');
+            console.log(err);
+            res.frontend.render('_404');
         });
     };
 
     controller.view_cart = function (req, res) {
         let products_ids = [];
+        // if req.session.cart object already exists
         if (req.session.cart) {
-            products_ids = req.session.cart;
+            products_ids = Object.keys(req.session.cart);
+            console.log(products_ids);
             // Find post by id
             application.models.product.findAll({
                 where: {
@@ -167,53 +171,87 @@ module.exports = function (controller, component, application) {
                     }
                 }
             }).then(function (results) {
-                res.frontend.render('cart', {cart_detail: results});
+                // cart_detail is the full detail of products in cart
+                // cart is the req.session.cart object so we can get product quantity in cart
+                res.frontend.render('cart', { cart_detail: results, cart: req.session.cart });
             }).catch(function (err) {
                 res.frontend.render('cart');
             })
         } else {
+            // if there is no req.session.cart yet, we set it as an object
+            req.session.cart = {};
             res.frontend.render('cart');
         }
     };
 
     controller.add_cart = function (req, res) {
-        let sess = req.session;
         let products_ids = [];
-        let exists = true;
-        if (sess.cart) {
-            products_ids = sess.cart;
-            products_ids.forEach(function (value) {
-                if (req.params.pid == value) {
-                    exists = false;
-                    return;
-                }
-            })
+
+        // Set cart as an object in the format: {'product_name': product_quantity}
+        if (!req.session.cart) {
+            console.log('Khởi tạo cart 1 lần duy nhất');
+            req.session.cart = {};
         }
-        if (exists) {
-            products_ids.push(req.params.pid);
-            sess.cart = products_ids;
-            res.send(products_ids);
-        } else {
-            res.send('exists');
+
+        // Get ids of all products in the cart
+        products_ids = Object.keys(req.session.cart);
+
+        if (products_ids.length == 0) {
+            // if there is no product in the cart -> add product
+            req.session.cart[req.params.pid] = 1;
+        } else { // one or more products are in the cart
+            
+            if (products_ids.indexOf(req.params.pid) === -1 ) {
+                // if the product is not yet in the cart
+                req.session.cart[req.params.pid] = 1;
+            } else {
+                // if the product is already in cart -> increase its quantity
+                let product_index = products_ids.indexOf(req.params.pid);
+                req.session.cart[products_ids[product_index]] += 1;
+            }
         }
+
+        // variable to count total number of products in shopping cart
+        let cart_total = 0;
+        // count total products in cart to show in shopping badge 
+        for (let item in req.session.cart) {
+            cart_total += parseInt(req.session.cart[item]);
+        }
+        res.send(String(cart_total));
+    };
+
+    controller.update_cart = function (req, res) {
+        // update_cart is called when change product quantity by quantity input field in cart html page 
+
+        // update the product quantity in cart
+        req.session.cart[req.params.pid] = req.params.newQuantity;
+
+        // variable to count total number of products in shopping cart
+        let cart_total = 0;
+        console.log(req.session.cart);
+        // count total products in cart to show in shopping badge 
+        for (let item in req.session.cart) {
+            cart_total += parseInt(req.session.cart[item]);
+        }
+        console.log('tính rổng sản phẩm là ');
+        console.log(cart_total);
+        res.send(String(cart_total));
     };
 
     controller.delete_cart = function (req, res) {
-        let ids = req.session.cart;
-        let id = req.body.id;
+        console.log(req.session.carts);
         if (req.body.id) {
-            //delete product of list
-            for (var i = 0; i < ids.length; i++) {
-                if (Number(ids[i]) === Number(id)) {
-                    ids.splice(i, 1);
-                }
-            }
-            res.send(true);
+            //delete one product from the cart
+            delete req.session.cart[req.body.id];
+            console.log('After deleting ' + req.session.carts);
+            // send over the updated cart
+            res.send(req.session.cart);
         } else {
             //delete all products in cart
             if (req.session.cart) {
-                req.session.cart = null;
+                req.session.cart = {};
             }
+            console.log('After deleting ' + req.session.cart);
             res.redirect('/');
         }
     };
@@ -224,7 +262,8 @@ module.exports = function (controller, component, application) {
         form.products = data;
         application.models.order.create(form).then(function (result) {
             if (result) {
-                req.session.cart = null;
+                req.session.cart = {};
+                cart_total = 0;
                 res.end('success');
             } else {
                 res.end('fail');
@@ -240,10 +279,10 @@ module.exports = function (controller, component, application) {
         let page = req.query.page || 1;
         let strSearch = req.query['txt'] || '';
         application.models.product.findAndCountAll({
-                where: ["\"title\" ILIKE '%" + strSearch + "%' OR \"desc\" ILIKE '%" + strSearch + "%' OR \"content\" ILIKE '%" + strSearch + "%'"],
-                limit: itemOfPage,
-                offset: (page - 1) * itemOfPage
-            }
+            where: ["\"title\" ILIKE '%" + strSearch + "%' OR \"desc\" ILIKE '%" + strSearch + "%' OR \"content\" ILIKE '%" + strSearch + "%'"],
+            limit: itemOfPage,
+            offset: (page - 1) * itemOfPage
+        }
         ).then(function (results) {
             if (results) {
                 let totalPage = Math.ceil(results.count / itemOfPage);
@@ -265,7 +304,7 @@ module.exports = function (controller, component, application) {
                 })
             }
         }).catch(function (err) {
-            res.frontend.render('404');
+            res.frontend.render('_404');
         })
     }
 };

@@ -1,10 +1,10 @@
 'use strict';
 
 module.exports = {
-    title: "Products",
+    title: __('m_product_backend_module_title'),
     author: 'Techmaster',
     version: '0.1.0',
-    description: 'Products manager system',
+    description: __('m_product_backend_module_desc'),
     permissions: [
         {
             name : 'index',
@@ -40,31 +40,26 @@ module.exports = {
         },
         {
             name : 'order',
-            title : 'Quản lý đơn hàng'
+            title : 'Manage orders'
         }
     ],
     backend_menu: {
-        title: 'Quản lý sản phẩm',
+        title: __('m_product_backend_module_menu_backend_menu_title'),
         icon: 'fa fa-newspaper-o',
         menus: [
             {
                 permission : 'index',
-                title: 'Danh sách',
+                title: __('m_product_backend_module_menu_backend_menu_index'),
                 link: '/'
             },
             {
-                permission : 'create',
-                title : 'Thêm mới',
-                link : '/create'
-            },
-            {
                 permission : 'category_index',
-                title : 'Danh mục',
+                title: __('m_product_backend_module_menu_backend_menu_category_index'),
                 link : '/categories'
             },
             {
-                 permission : 'order',
-                title : 'Đơn hàng',
+                permission : 'order',
+                title: __('m_product_backend_module_menu_backend_menu_order_index'),
                 link : '/order'
             }
         ]

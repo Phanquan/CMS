@@ -1,0 +1,10 @@
+<!--SIDE BAR BLOG-->
+{% for post in posts %}
+<a class="" href="/blog/posts/{{post.id}}/{{post.alias}}">
+	<img src="{{ post.image }}">
+	<p>{{ post.title }}</p>
+  <span>{{ post.published_at | moment('DD-MM-YYYY') }}</span>
+</a>
+{% endfor %}
+<a class="more" href="/blog/posts">Đọc thêm</a>
+<!--END SIDE BAR BLOG-->

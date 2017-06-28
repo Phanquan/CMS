@@ -17,7 +17,7 @@
                                 <div class="item{% if loop.first %} active{% endif %}">
                                     <div class="col-sm-6">
                                         <h3><a class="detail_"
-                                               href="/product/detail/{{ product.id }}">{{ product.title | safe }}</a>
+                                               href="/products/detail/{{ product.id }}">{{ product.title | safe }}</a>
                                         </h3>
 
                                         <p>{% if product.desc %}{{ product.desc | title(300,'...') | safe }}{% else %}{{ product.content | title(300,'...') | safe }}{% endif %}</p>

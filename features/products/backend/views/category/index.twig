@@ -29,7 +29,7 @@
 
             <div class="box box-solid box-primary">
                 <div class="box-body table-responsive no-padding">
-                    {% include 'basic_table/_table.twig' %}
+                     {% include 'basic_table/_table.' + getConfig('viewExtension') %}
                     {{ paginateLinks(totalPage, currentPage,'/admin/products/categories/page/{page}/sort/'+currentColumn+'/'+currentOrder)|safe }}
                 </div>
             </div>

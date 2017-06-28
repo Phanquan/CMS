@@ -11,7 +11,7 @@ module.exports = function (component) {
                 handler: comp.list
             }
         },
-        "/product/detail/:pid([0-9]+)": {
+        "/products/detail/:pid([0-9]+)": {
             get: {
                 handler: comp.detail
             }
@@ -46,6 +46,11 @@ module.exports = function (component) {
         "/cart/:pid([0-9]+)": {
             get: {
                 handler: comp.add_cart
+            }
+        },
+        "/cart/:pid([0-9]+)/:newQuantity": {
+            get: {
+                handler: comp.update_cart
             }
         },
         "/cart/delete": {

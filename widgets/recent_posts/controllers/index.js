@@ -25,11 +25,12 @@ module.exports = function (controller, component, application) {
         } catch (err) {
             layout = component.getLayouts(widget.widget_name)[0];
         }
+        let limit = JSON.parse(widget.data).number_of_recent_posts || 5;
 
         // Get all categories
         return application.models.post.findAll({
             order: 'published_at desc',
-            limit: JSON.parse(widget.data).number_of_recent_posts,
+            limit: limit,
             where: {
                 published: 1,
                 type: 'post'

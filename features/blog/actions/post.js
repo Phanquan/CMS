@@ -1,7 +1,7 @@
 'use strict';
 
-let slug = require('slug');
-
+const slug = require('slug');
+const sequelize = require('sequelize');
 module.exports = function (action, comp, app) {
     /**
      * Find post by ID
@@ -98,6 +98,18 @@ module.exports = function (action, comp, app) {
             }
         })
     };
+
+    /**
+     * Extract the months from published_at and counts posts in that month
+     * @param limit {integer} - Limit number of months we retrieve
+     */
+    // Raw Query: select count(id), extract (MONTH from published_at) as published_month from arr_post group by published_month
+    // Notes: we use raw query here so if the table name 'arr_post' is changed, we need to update this query
+    // app.models refers to the sequelize instance - our database
+    action.groupByPublishedMonth = function (limit) {
+        return app.models.query("select count(id), extract(year from published_at) as published_year, extract(month from published_at) as published_month from arr_post where type = 'post' and published = 1 group by published_year, published_month order by published_year, published_month desc LIMIT ?",
+                { replacements: [limit], type: sequelize.QueryTypes.SELECT });
+    }
 
     function optimizeData(data) {
         if (data.title) {

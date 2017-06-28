@@ -1,7 +1,8 @@
 'use strict';
 
-let logger = require('arrowjs').logger;
-let fs = require('fs'),
+const logger = require('arrowjs').logger;
+const fsExtra = require('arrowjs').fs; 
+const fs = require('fs'),
     sizeOf = require('image-size'),
     im = require('imagemagick'),
     formidable = require('formidable'),
@@ -232,22 +233,30 @@ module.exports = function (controller, component, app) {
                             let number = noExt.match(/\(\d\)$/);
                             if (number) {
                                 checkFileExist(noExt.replace(/\(\d\)$/, ''), 1, ext).then(function (result) {
-                                    fs.rename(files["files[]"].path, result, function (err) {
+                                    
+                                    fsExtra.move(files["files[]"].path, result, function (err) {
                                         if (err) logger.error(err);
                                     });
                                 });
                             } else {
                                 checkFileExist(noExt, 1, ext).then(function (result) {
-                                    fs.rename(files["files[]"].path, result, function (err) {
+                                    
+                                    fsExtra.move(files["files[]"].path, result, function (err) {
                                         if (err) logger.error(err);
                                     });
                                 });
                             }
                         } else {
-                            fs.rename(files["files[]"].path, destination, function (err) {
-                                if (err) logger.error(err);
-                            });
-                        }
+                            // fs.rename(files["files[]"].path, destination, function (err) {
+                            //     //if (err) logger.error(err);
+                            //     if (err) {
+                                    fsExtra.move(files["files[]"].path, destination, function (err) {
+                                        if (err) logger.error(err);
+                                    });
+                                }
+
+                            //});
+                        //}
                     });
                 } else {
                     msg = "File type does not allowed";

@@ -128,7 +128,7 @@ module.exports = function (component, application) {
                 permissions: 'order'
             },
             post: {
-                hander: comp.orderUpdate,
+                handler: comp.orderUpdate,
                 authenticate: true,
                 permissions: 'order'
             }

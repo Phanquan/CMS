@@ -58,10 +58,10 @@
         $.ajax({
             method : 'get',
             url : '/cart/'+id
-        }).done(function(result){
-            if (result == 'exists'){
+        }).done(function(result) {
+            if (result == 'exists') {
                 alert('Sản phẩm này đã có trong giỏ hàng !');
-            }else{
+            } else{ 
                 alert('Đã cho vào giỏ hàng !');
                 $('#cart_quantity').text('( '+result.length+' )');
             }
@@ -70,13 +70,13 @@
     //add event to handler click to view product detail
     $(document).ready(function() {
         $(".productinfo div img" ).on( "click", function () {
-            window.location.href = '/product/detail/'+this.id;
+            window.location.href = '/products/detail/'+this.id;
         });
         $('.overlay-content img').on("click", function () {
-            window.location.href = '/product/detail/'+this.id;
+            window.location.href = '/products/detail/'+this.id;
         });
         $('.overlay-content p').on("click", function () {
-            window.location.href = '/product/detail/'+this.id;
+            window.location.href = '/products/detail/'+this.id;
         });
     });
 </script>

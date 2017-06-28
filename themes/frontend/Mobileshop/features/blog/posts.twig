@@ -1,0 +1,53 @@
+{% extends '_layout.' + getConfig('viewExtension') %} {% block head %}
+<link href="/frontend/Mobileshop/assets/css/danh-sach-style.css" rel="stylesheet">
+<link href="/frontend/Mobileshop/assets/css/tin-tuc-style.css" rel="stylesheet"> {% endblock %} {% block content %}
+<section class="container" id="news-page">
+
+  <div class="row mot-hang">
+    <a href="/tin-tuc" class="big-title">TIN CÔNG NGHỆ</a>
+    <span></span>
+  </div>
+  <!-- end -row -->
+  <!-- THANH TIÊU ĐỀ //////////////////////////////////////////////////////////////////////// -->
+
+  <div class="row">
+
+    <div class="col-md-9">
+      {% for post in posts %}
+      <div class="news-box">
+        <a class="image" href=""><img src="{{post.image}}" alt=""></a>
+        <div class="news-box-1">
+          <h3>{{post.title}}</h3>
+          <p>{{ post.intro_text | safe }} </p>
+          <p class="date">{{ post.published_at | moment('DD-MM-YYYY') }}</p>
+          <a href="/blog/posts/{{ post.id }}/{{ post.alias }}">Đọc tiếp</a>
+        </div>
+      </div>
+      {% endfor %}
+      <!-- Pagination Start -->
+      {% if totalPage > 1 %}
+      <div class="pagination-box">
+        <ul class="pagination">
+          {% for i in range(1, totalPage + 1) %} {% if i === currentPage %}
+          <li class="active"><a href="#">{{ i }}</a></li>
+          {% else %}
+          <li><a href="{{baseURL}}{{i}}"> {{i}} </a></li>
+          {% endif %} {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+
+
+    <!--BLOG CATEGORIES-->
+    <aside class="col-md-offset-1 col-md-2 list-menu-box">
+      <ul>
+        {{ getSidebar("right-sidebar") | async | safe }}
+      </ul>
+    </aside>
+    <!--END BLOG CATEGORIES-->
+
+  </div>
+  <!-- end row -->
+</section>
+{% endblock %}

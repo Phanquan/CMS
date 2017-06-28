@@ -169,9 +169,12 @@
 {% endblock %}
 {% block jsExtends %}
     <script>
-
         var ids = [];
+        let lang = 'vi-VN'
+        console.log(lang);
+        let currencySymbol = 'đ';
 
+        let VAT = 0.1
         function buy() {
             $('#myModal').modal('show');
         }
@@ -179,107 +182,119 @@
             {% if cart_detail %}
             {% for product in cart_detail %}
             change_value({{ product.id }});
-            ids.push({{ product.id }});
-            {% endfor %}
-            {% endif %}
-            totalPrice();
+        ids.push({{ product.id }});
+        {% endfor %}
+        {% endif %}
+        totalPrice();
 
-            $('#submit_cart').submit(function () {
-                var data = '{ "total" : "' + $("#total").text() + '","vat" : "' + $("#vat").text() + '","total_vat" : "' + $("#total_vat").text() + '" ,"cart" : [';
-                for (var i = 0; i < ids.length; i++) {
-                    data += ' {' +
-                            '"id" : "' + ids[i] + '",' +
-                            '"title" : "' + $("#title_" + ids[i]).text() + '",' +
-                            '"price" : "' + $("#price_" + ids[i]).text() + '",' +
-                            '"quantity" : "' + $("#quantity_" + ids[i]).val() + '",' +
-                            '"total_price" : "' + $("#total_price_" + ids[i]).text() + '"' +
-                            '}';
-                    if (i !== (ids.length - 1)) {
-                        data += ',';
-                    }
+        $('#submit_cart').submit(function () {
+            var data = '{ "total" : "' + $("#total").text() + '","vat" : "' + $("#vat").text() + '","total_vat" : "' + $("#total_vat").text() + '" ,"cart" : [';
+            for (var i = 0; i < ids.length; i++) {
+                data += ' {' +
+                    '"id" : "' + ids[i] + '",' +
+                    '"title" : "' + $("#title_" + ids[i]).text() + '",' +
+                    '"price" : "' + $("#price_" + ids[i]).text() + '",' +
+                    '"quantity" : "' + $("#quantity_" + ids[i]).val() + '",' +
+                    '"total_price" : "' + $("#total_price_" + ids[i]).text() + '"' +
+                    '}';
+                if (i !== (ids.length - 1)) {
+                    data += ',';
                 }
-                data += ']}';
-                //console.log(data);
-                $('#products_hidden').val(data);
+            }
+            data += ']}';
+            //console.log(data);
+            $('#products_hidden').val(data);
 
-                $.ajax({
-                    method: "POST",
-                    url: "/cart/submit",
-                    data: $('#submit_cart').serialize()
-                })
-                        .done(function (result) {
-                            if (result == 'success') {
-                                alert('Gửi đơn hàng thành công !');
-                                window.location.href = '/';
-                            } else {
-                                alert('Có lỗi vui lòng thực hiện lại !')
-                            }
-                        });
-                return false;
+            $.ajax({
+                method: "POST",
+                url: "/cart/submit",
+                data: $('#submit_cart').serialize()
             })
+                .done(function (result) {
+                    if (result == 'success') {
+                        alert('Gửi đơn hàng thành công !');
+                        window.location.href = '/';
+                    } else {
+                        console.log(result);
+                        alert('Có lỗi vui lòng thực hiện lại !')
+                    }
+                });
+            return false;
         })
+   });
 
         function change_value(id) {
             var price = $('#price_' + id).text();
             price = Number(price.replace(/\D/ig, ''));
             price = price * Number($('#quantity_' + id).val());
             //console.log(price);
-            $('#total_price_' + id).text(display_price(price, ' đ', '.'));
+            //$('#total_price_' + id).text(display_price(price, ' đ', '.'));
+            $('#total_price_' + id).text(display_price(price));
             totalPrice();
         }
+
         function totalPrice() {
             var total = 0;
             ids.forEach(function (id) {
-                var price = $('#price_' + id).text();
+                var price = $('#total_price_' + id).text();
                 price = Number(price.replace(/\D/ig, ''));
                 total += price;
             });
-            $('#total').text(display_price(total, ' đ', '.'));
-            $('#vat').text(display_price(total * 10 / 100, ' đ', '.'));
-            $('#total_vat').text(display_price(total + (total * 10 / 100), ' đ', '.'));
-            $('#total_bill_hidden').val(display_price(total + (total * 10 / 100), '', ''));
+            // $('#total').text(display_price(total, ' đ', '.'));
+            // $('#vat').text(display_price(total * 10 / 100, ' đ', '.'));
+            // $('#total_vat').text(display_price(total + (total * 10 / 100), ' đ', '.'));
+            // $('#total_bill_hidden').val(display_price(total + (total * 10 / 100), '', ''));
+            $('#total').text(display_price(total));
+            $('#vat').text(display_price(total * VAT));
+            $('#total_vat').text(display_price(total + (total * VAT)));
         }
-        function display_price(price, sym, digit) {
-            price = price.toString().split(/\,|\./ig).shift();
-            var result = '';
-            if (digit == null)digit = '.';
-            if (price.match(/[0-9]+/)) {
-                var count = 0;
-                for (var i = price.length - 1; i >= 0; i--) {
-                    if (count % 3 == 0 && count != 0) {
-                        result += (digit + price[i]);
-                    } else {
-                        result += price[i];
-                    }
-                    count++;
-                }
-                price = '';
-                for (var i = result.length - 1; i >= 0; i--) {
-                    price += result[i];
-                }
-            }
-            return price + sym;
+        // function display_price(price, sym, digit) {
+        //     price = price.toString().split(/\,|\./ig).shift();
+        //     var result = '';
+        //     if (digit == null)digit = '.';
+        //     if (price.match(/[0-9]+/)) {
+        //         var count = 0;
+        //         for (var i = price.length - 1; i >= 0; i--) {
+        //             if (count % 3 == 0 && count != 0) {
+        //                 result += (digit + price[i]);
+        //             } else {
+        //                 result += price[i];
+        //             }
+        //             count++;
+        //         }
+        //         price = '';
+        //         for (var i = result.length - 1; i >= 0; i--) {
+        //             price += result[i];
+        //         }
+        //     }
+        //     return price + sym;
+        // }
+        
+        function display_price(price) {
+            let newPrice = price.toLocaleString(lang);
+            return newPrice + ' ' + currencySymbol;
         }
+        
         function delete_item(id) {
             $.ajax({
                 method: "POST",
                 url: "/cart/delete",
-                data: {id: id}
+                data: { id: id }
             })
-                    .done(function (result) {
-                        if (result) {
-                            for (var i = 0; i < ids.length; i++) {
-                                if (Number(ids[i]) === Number(id)) {
-                                    ids.splice(i, 1);
-                                }
+                .done(function (result) {
+                    if (result) {
+                        for (var i = 0; i < ids.length; i++) {
+                            if (Number(ids[i]) === Number(id)) {
+                                ids.splice(i, 1);
                             }
-                            totalPrice();
-                            $('#product_row_' + id).remove();
-                            $('#cart_quantity').text('( ' + ids.length + ' )');
-                        } else {
-                            alert('Có lỗi vui lòng thực hiện lại !')
                         }
-                    });
+                        totalPrice();
+                        $('#product_row_' + id).remove();
+                        $('#cart_quantity').text('( ' + ids.length + ' )');
+                    } else {
+                        alert('Có lỗi vui lòng thực hiện lại !')
+                    }
+                });
             return false;
         }
     </script>

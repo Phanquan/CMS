@@ -28,8 +28,7 @@ module.exports = function (controller, component, application) {
         toolbar.addDeleteButton(isAllow(req, 'delete'));
         toolbar = toolbar.render();
 
-        let tableStructure = [
-            {
+        let tableStructure = [{
                 column: "id",
                 width: '1%',
                 header: "",
@@ -38,7 +37,7 @@ module.exports = function (controller, component, application) {
             {
                 column: "title",
                 width: '25%',
-                header: 'Tiêu đề sản phẩm',
+                header: __('all_table_column_name'),
                 link: '/admin/products/{id}',
                 filter: {
                     data_type: 'string'
@@ -47,17 +46,17 @@ module.exports = function (controller, component, application) {
             {
                 column: 'quantity',
                 width: '10%',
-                header: 'Số lượng',
+                header: __('all_table_column_count'),
                 type: 'number',
                 filter: {
                     data_type: 'integer',
-                    filter_key : 'quantity'
+                    filter_key: 'quantity'
                 }
             },
             {
                 column: 'price',
                 width: '10%',
-                header: 'Giá',
+                header: __('all_table_column_price'),
                 type: 'integer',
                 filter: {
                     type: 'integer',
@@ -67,7 +66,7 @@ module.exports = function (controller, component, application) {
             {
                 column: 'price_sale',
                 width: '10%',
-                header: 'Khuyến mại',
+                header: __('all_table_column_price_sale'),
                 type: 'integer',
                 filter: {
                     type: 'integer',
@@ -77,22 +76,21 @@ module.exports = function (controller, component, application) {
             {
                 column: 'status',
                 width: '10%',
-                header: 'Tình trạng',
+                header: __('all_table_column_status'),
                 type: 'custom',
                 alias: {
-                    "1": "Cũ",
-                    "0": "Mới"
+                    "1": __('m_product_backend_views_form_product_status_option_old'),
+                    "0": __('m_product_backend_views_form_product_status_option_new')
                 },
                 filter: {
                     type: 'select',
                     filter_key: 'status',
-                    data_source: [
-                        {
-                            name: 'Cũ',
+                    data_source: [{
+                            name: __('m_product_backend_views_form_product_status_option_new'),
                             value: 1
                         },
                         {
-                            name: 'Mới',
+                            name: __('m_product_backend_views_form_product_status_option_old'),
                             value: 0
                         }
                     ],
@@ -110,14 +108,12 @@ module.exports = function (controller, component, application) {
 
         // List products
         application.models.product.findAndCountAll({
-            include: [
-                {
-                    model: application.models.user,
-                    attributes: ['display_name'],
-                    where: ['1 = 1']
+            include: [{
+                model: application.models.user,
+                attributes: ['display_name'],
+                where: ['1 = 1']
 
-                }
-            ],
+            }],
             order: filter.order,
             limit: filter.limit,
             offset: filter.offset,
@@ -126,7 +122,7 @@ module.exports = function (controller, component, application) {
             let totalPage = Math.ceil(results.count / itemOfPage);
 
             res.backend.render('product/index', {
-                title: 'Danh sách sản phẩm',
+                title: __('m_product_backend_module_menu_backend_menu_index'),
                 items: results.rows,
                 totalPage: totalPage,
                 currentPage: page,
@@ -136,7 +132,7 @@ module.exports = function (controller, component, application) {
             _log.error(error);
             req.flash.error('Name: ' + error.name + '<br />' + 'Message: ' + error.message);
             res.backend.render('product/index', {
-                title: 'Danh sách sản phẩm',
+                title: __('m_product_backend_module_menu_backend_menu_index'),
                 totalPage: 1,
                 items: null,
                 currentPage
@@ -147,8 +143,7 @@ module.exports = function (controller, component, application) {
     controller.productDelete = function (req, res) {
         application.models.product.findAll({
             where: {
-                id: {
-                    in: req.body['ids'].split(',')
+                id: { in: req.body['ids'].split(',')
                 }
             }
         }).then(function (products) {
@@ -179,7 +174,7 @@ module.exports = function (controller, component, application) {
                     req.flash.error('Product id: ' + post.id + ' | ' + err.name + ' : ' + err.message);
                 });
             });
-            req.flash.success('Xóa sản phẩm thành công');
+            req.flash.success(__('m_product_backend_flash_delete_success'));
             res.sendStatus(200);
         });
     };
@@ -200,7 +195,7 @@ module.exports = function (controller, component, application) {
             res.backend.render('product/new', {
                 categories: results[0],
                 toolbar: toolbar,
-                title: 'Thêm mới sản phẩm'
+                title: __('m_product_backend_render_create')
             })
         }).catch(function (err) {
 
@@ -231,17 +226,17 @@ module.exports = function (controller, component, application) {
         ]).then(function (results) {
             let data = results[2];
             let images = data.images.split(':::');
-            if(images[0].length <= 0){
-                images.splice(0,1);
+            if (images[0].length <= 0) {
+                images.splice(0, 1);
             }
             //console.log(images);
             data.content = data.content.replace(/&lt/g, "&amp;lt");
             res.backend.render('product/new', {
-                title : 'Cập nhật sản phẩm',
-                categories : results[0],
+                title: __('m_product_backend_render_update'),
+                categories: results[0],
                 users: results[1],
                 product: data,
-                images : images,
+                images: images,
                 toolbar: toolbar
             });
         });
@@ -282,16 +277,16 @@ module.exports = function (controller, component, application) {
             if (Array.isArray(tag) && Array.isArray(newtag)) {
                 onlyInA = tag.filter(function (current) {
                     return newtag.filter(function (current_b) {
-                            return current_b == current
-                        }).length == 0
+                        return current_b == current
+                    }).length == 0
                 });
                 onlyInB = newtag.filter(function (current) {
                     return tag.filter(function (current_a) {
-                            return current_a == current
-                        }).length == 0
+                        return current_a == current
+                    }).length == 0
                 });
             }
-            if (typeof Number(data.price_sale) != 'number')data.price_sale = 0;
+            if (typeof Number(data.price_sale) != 'number') data.price_sale = 0;
             product.updateAttributes(data).then(function () {
                 promise.all([
                     promise.map(onlyInA, function (id) {
@@ -304,17 +299,17 @@ module.exports = function (controller, component, application) {
                     }),
                     promise.map(onlyInB, function (id) {
                         return application.models.product_category.findById(id).then(function (tag) {
-                            let count =tag.count + 1;
+                            let count = tag.count + 1;
                             return tag.updateAttributes({
                                 count: count
                             })
                         });
                     })
                 ]).then(function (data) {
-                    req.flash.success('Cập nhật product thành công');
+                    req.flash.success(__('m_product_backend_flash_update_success'));
                     next();
                 }).catch(function (err) {
-                    req.flash.error('Cập nhật product không thành công');
+                    req.flash.error(__('m_product_backend_flash_update_error'));
                     next();
                 })
             });
@@ -342,14 +337,14 @@ module.exports = function (controller, component, application) {
                 tag.pop(tag.length - 1);
                 promise.map(tag, function (id) {
                     return application.models.product_category.findById(id).then(function (category) {
-                        let count =category.count + 1;
+                        let count = category.count + 1;
                         return category.updateAttributes({
                             count: count
                         })
                     });
                 });
             }
-            req.flash.success('Tạo mới sản phẩm thành công !');
+            req.flash.success(__('m_product_backend_flash_create_success'));
             res.redirect('/admin/products/' + product.id);
         }).catch(function (err) {
             req.flash.error(err.message);
@@ -359,9 +354,10 @@ module.exports = function (controller, component, application) {
 
     controller.productUploadImage = function (req, res) {
         let form = new formidable.IncomingForm();
-        form.uploadDir = __base+'/upload/img/products/';
+        console.log(__base);
+        form.uploadDir = __base + '/upload/img/products/';
         form.keepExtensions = true;
-        let path=__base+'/upload/img/';
+        let path = __base + '/upload/img/';
         if (!fs.existsSync(form.uploadDir)) {
             fs.mkdirSync(form.uploadDir, function (err) {
                 console.log(err);
@@ -369,19 +365,21 @@ module.exports = function (controller, component, application) {
             });
         }
         form.parse(req, function (err, fields, files) {
-            if (!err){
-                var newPath = form.uploadDir + files.image.name;
-                newPath = newPath.replace(/ /g,'_').toLowerCase();
+            if (!err) {
+                let newPath = form.uploadDir + files.image.name;
+                newPath = newPath.replace(/ /g, '_');
+                console.log(newPath);
                 fs.rename(files.image.path, newPath, function (err) {
                     if (err) {
                         res.end('cannot rename file ' + files.image.path);
+                        console.log(err);
                     }
                 });
-                res.send('/img/products/'+files.image.name.replace(/ /g,'_').toLowerCase());
-
-            }
-            else
+                console.log(files.image.path);
+                res.send('/img/products/' + files.image.name.replace(/ /g, '_'));
+            } else {
                 res.send('error');
+            }
         })
     };
 
@@ -394,12 +392,15 @@ module.exports = function (controller, component, application) {
 
     controller.productDeleteImage = function (req, res) {
         let id_ = req.body.id;
-        let result={id : id_,action : false};
+        let result = {
+            id: id_,
+            action: false
+        };
         //console.log(req.body.url);
-        fs.unlink(__base+'/upload'+req.body.url, function(err) {
-            if (err){
+        fs.unlink(__base + '/upload' + req.body.url, function (err) {
+            if (err) {
                 res.send(result);
-            }else{
+            } else {
                 result.action = true;
                 res.send(result);
             }
@@ -415,73 +416,75 @@ module.exports = function (controller, component, application) {
      link_template: '/admin/blog/{id}/{alias}' //link of post add to menu
      * */
     controller.link_menu_products_category = function (req, res) {
-        let page = req.query.page;
-        let searchText = req.query.searchStr;
+            let page = req.query.page;
+            let searchText = req.query.searchStr;
 
-        let conditions = " 1=1 ";
-        if (searchText != '') conditions += " AND name ilike '%" + searchText + "%'";
+            let conditions = " 1=1 ";
+            if (searchText != '') conditions += " AND name ilike '%" + searchText + "%'";
 
-        // Find all posts with page and search keyword
-        application.models.product_category.findAndCount({
-            attributes: ['id', 'name', 'alias'],
-            where: [conditions],
-            limit: itemOfPage,
-            offset: (page - 1) * itemOfPage,
-            raw: true
-        }).then(function (results) {
-            let totalRows = results.count;
-            let items = results.rows;
-            let totalPage = Math.ceil(results.count / itemOfPage);
+            // Find all posts with page and search keyword
+            application.models.product_category.findAndCount({
+                attributes: ['id', 'name', 'alias'],
+                where: [conditions],
+                limit: itemOfPage,
+                offset: (page - 1) * itemOfPage,
+                raw: true
+            }).then(function (results) {
+                let totalRows = results.count;
+                let items = results.rows;
+                let totalPage = Math.ceil(results.count / itemOfPage);
 
-            // Send json response
-            res.jsonp({
-                totalRows: totalRows,
-                totalPage: totalPage,
-                items: items,
-                title_column: 'name',
-                link_template: '/products/{id}'
+                // Send json response
+                res.jsonp({
+                    totalRows: totalRows,
+                    totalPage: totalPage,
+                    items: items,
+                    title_column: 'name',
+                    link_template: '/products/{id}'
+                });
+            }).catch(function (err) {
+                console.log(err);
             });
-        });
-    },
-    /*
-     * function to display all post which is choosed by user when create menus
-     * return : json object contain
-     totalRows: totalRows //number of posts
-     totalPage: totalPage //number of page to display
-     items: items //posts to display
-     title_column: 'title',//title of column to display
-     link_template: '/admin/blog/{id}/{alias}' //link of post add to menu
-     * */
-    controller.link_menu_products = function (req, res) {
-        console.log('link menu');
-        let page = req.query.page;
-        let searchText = req.query.searchStr;
+        },
+        /*
+         * function to display all post which is choosed by user when create menus
+         * return : json object contain
+         totalRows: totalRows //number of posts
+         totalPage: totalPage //number of page to display
+         items: items //posts to display
+         title_column: 'title',//title of column to display
+         link_template: '/admin/blog/{id}/{alias}' //link of post add to menu
+         * */
+        controller.link_menu_products = function (req, res) {
+            console.log('link menu');
+            let page = req.query.page;
+            let searchText = req.query.searchStr;
 
-        let conditions = " 1 = 1 ";
-        if (searchText != '') conditions += " AND title ilike '%" + searchText + "%'";
+            let conditions = " 1 = 1 ";
+            if (searchText != '') conditions += " AND title ilike '%" + searchText + "%'";
 
-        // Find all posts with page and search keyword
-        application.models.product.findAndCount({
-            attributes: ['id', 'title'],
-            where: [conditions],
-            limit: itemOfPage,
-            offset: (page - 1) * itemOfPage,
-            raw: true
-        }).then(function (results) {
-            let totalRows = results.count;
-            let items = results.rows;
-            let totalPage = Math.ceil(results.count / itemOfPage);
+            // Find all posts with page and search keyword
+            application.models.product.findAndCount({
+                attributes: ['id', 'title'],
+                where: [conditions],
+                limit: itemOfPage,
+                offset: (page - 1) * itemOfPage,
+                raw: true
+            }).then(function (results) {
+                let totalRows = results.count;
+                let items = results.rows;
+                let totalPage = Math.ceil(results.count / itemOfPage);
 
-            // Send json response
-            res.jsonp({
-                totalRows: totalRows,
-                totalPage: totalPage,
-                items: items,
-                title_column: 'title',
-                link_template: '/product/detail/{id}'
+                // Send json response
+                res.jsonp({
+                    totalRows: totalRows,
+                    totalPage: totalPage,
+                    items: items,
+                    title_column: 'title',
+                    link_template: '/product/detail/{id}'
+                });
+            }).catch(function (err) {
+                console.log(err);
             });
-        }).catch(function (err) {
-            console.log(err);
-        });
-    }
+        }
 };

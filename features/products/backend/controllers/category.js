@@ -52,12 +52,18 @@ module.exports = function (controller, component, application) {
                 link: '/admin/products/categories/{id}',
                 acl: 'category_update',
                 type: 'inline',
-                pk: '{id}'
+                pk: '{id}',
+                filter: {
+                    data_type: 'string'
+                }
             },
             {
                 column: 'count',
-                header: 'Sản phẩm',
-                width: '19%'
+                header: __('all_table_column_count'),
+                width: '19%',
+                filter: {
+                    data_type: 'number'
+                }
             }
         ];
 
@@ -75,7 +81,7 @@ module.exports = function (controller, component, application) {
         }).then(function (results) {
             let totalPage = Math.ceil(results.count / itemOfPage);
             res.backend.render('category/index', {
-                title:'Danh mục sản phẩm',
+                title: __('m_product_backend_module_menu_backend_menu_category_index'),
                 totalPage: totalPage,
                 items: results.rows,
                 currentPage: page,

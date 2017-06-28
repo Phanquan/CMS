@@ -7,7 +7,7 @@ module.exports = function (controller, component, app) {
 
     controller.allPosts = function (req, res) {
         let page = req.params.page || 1;
-        let number_item = 10;
+        let number_item = app.getConfig('pagination').frontNumberItem || 5;
         let totalPage = 1;
 
         app.feature.blog.actions.findAndCountAll({
@@ -27,7 +27,7 @@ module.exports = function (controller, component, app) {
                     posts: posts.rows,
                     totalPage: totalPage,
                     currentPage: page,
-                    baseURL: '/blog/posts/page-{page}'
+                    baseURL: '/blog/posts/page-'
                 });
             } else {
                 // Redirect to 404 if posts not exist
@@ -38,7 +38,6 @@ module.exports = function (controller, component, app) {
 
     controller.postDetail = function (req, res) {
         let postId = req.params.postId;
-
         app.feature.blog.actions.find({
             where: {
                 id: postId,
@@ -86,15 +85,15 @@ module.exports = function (controller, component, app) {
 
         let number_item = app.getConfig('pagination').frontNumberItem || 10;
 
-        let sql = 'select posts.*,users.user_email,users.user_url,users.display_name,' +
-            'users.user_image_url,users.user_status' +
-            'from arr_post as posts left outer join arr_user as users on posts.created_by = users.id WHERE' +
-            ' "posts"."type" = \'post\' AND "posts"."published" = 1 AND EXTRACT(MONTH FROM posts.created_at ) = ' + month_ + ' AND EXTRACT(YEAR FROM posts.created_at) = ' + year_ +
-            ' ORDER BY posts.id ASC OFFSET ' + (page - 1) * number_item + ' LIMIT ' + number_item;
+        let sql = "select posts.*, users.user_email, users.display_name, users.user_image_url, users.user_status" + 
+        " from arr_post as posts left outer join arr_user as users on posts.created_by = users.id" + 
+        " WHERE posts.type = 'post' AND posts.published = 1 AND EXTRACT(MONTH FROM posts.published_at) = "+ month_  + 
+            " AND EXTRACT(YEAR FROM posts.published_at) = " + year_ + "ORDER BY posts.id DESC OFFSET " + (page - 1) * number_item + " LIMIT " + number_item;
 
-        let sqlCount = 'select count(*) ' +
-            'from arr_post as posts WHERE' +
-            ' "posts"."type" = \'post\' AND "posts"."published" = 1 AND EXTRACT(MONTH FROM posts.created_at ) = ' + month_ + ' AND EXTRACT(YEAR FROM posts.created_at) = ' + year_;
+        let sqlCount = "select count(*)" +
+            " from arr_post as posts WHERE" +
+            " posts.type = 'post' AND posts.published = 1 AND EXTRACT (MONTH FROM posts.published_at ) = " + month_ + 
+            " AND EXTRACT (YEAR FROM posts.published_at) = " + year_;
 
         app.models.rawQuery(sql).then(function (result) {
             if (result) {
@@ -103,13 +102,13 @@ module.exports = function (controller, component, app) {
                     .then(function (countPost) {
                         let totalPage = Math.ceil(countPost[0][0].count / number_item) || 1;
 
-                        res.frontend.render('archives', {
+                        res.frontend.render('posts', {
                             posts: result[0],
                             archives_date: year_ + ' ' + month_,
                             month: month_,
                             totalPage: totalPage,
                             currentPage: page,
-                            baseURL: '/blog/posts/archives/' + year_ + '/' + month_ + '/page-{page}'
+                            baseURL: '/blog/posts/archives/' + year_ + '/' + month_ + '/page-'
                         });
                     })
             } else {
@@ -153,7 +152,7 @@ module.exports = function (controller, component, app) {
                     posts: results.rows,
                     totalPage: totalPage,
                     currentPage: page,
-                    baseURL: '/blog/posts/' + req.params.author + '/page-{page}'
+                    baseURL: '/blog/posts/' + req.params.author + '/page-'
                 });
             } else {
                 // Redirect to 404 if post not exist
@@ -166,7 +165,7 @@ module.exports = function (controller, component, app) {
 
     controller.listPostByCategory = function (req, res) {
         let page = req.params.page || 1;
-        let number_item = app.getConfig('pagination').frontNumberItem || 10;
+        let number_item = app.getConfig('pagination').frontNumberItem || 5;
         let alias = req.params.alias || '';
         let id = req.params.id || '';
 
@@ -175,7 +174,7 @@ module.exports = function (controller, component, app) {
                 include: [
                     {
                         model: app.models.user,
-                        attributes: ['id', 'display_name', 'user_login', 'user_email', 'user_image_url']
+                        attributes: ['id', 'display_name', 'user_email', 'user_image_url']
                     }
                 ],
                 where: {
@@ -197,7 +196,7 @@ module.exports = function (controller, component, app) {
                     numberOfPost: result[0].rows.length,
                     totalPage: totalPage,
                     currentPage: page,
-                    baseURL: '/blog/posts/categories/' + alias + '/' + id + '/page-:page([0-9]+)?(/)?',
+                    baseURL: '/blog/posts/categories/' + alias + '/' + id + '/page-',
                 });
             } else {
                 // Redirect to 404 if post not exist

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  {% include "_head." + getConfig('viewExtension') %} {% block head %}
+  <!--<link rel="stylesheet" type="text/css" href="/css/login-form-style.css"> -->
+  <script src="/frontend/Mobileshop/assets/owlcarousel/owl.carousel.min.js"></script>
+  <script src="/frontend/Mobileshop/assets/owlcarousel/carousel.js"></script>
+  {% endblock %}
+</head>
+
+<body>
+  <header>
+    {% include "_header." + getConfig('viewExtension') %}
+  </header>
+  {% include '_login-form.'+ getConfig('viewExtension') %} 
+  
+  {% block content %} 
+
+  {% endblock %} 
+  
+  {% include "_contact-footer."+ getConfig('viewExtension') %}
+  <footer>
+    {% include "_footer."+ getConfig('viewExtension') %}
+  </footer>
+  <!-- end footer-->
+
+{% block jsExtends %}
+{% endblock %}
+<script>
+  function add_cart(id) {
+    $.ajax({
+      method: 'get',
+      url: '/cart/' + id
+    }).done(function (result) {
+      console.log(result);
+      // if (result == 'exists') {
+      //   alert('Sản phẩm này đã có trong giỏ hàng !');
+      // } else {
+        alert('Đã cho vào giỏ hàng !');
+        $('#cart_quantity').text('( ' + result + ' )');
+      // }
+    });
+  }
+</script>
+</body>
+
+</html>

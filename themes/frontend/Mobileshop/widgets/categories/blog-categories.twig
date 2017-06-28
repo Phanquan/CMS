@@ -1,0 +1,11 @@
+<!--BLOG CATEGORIES-->
+{% if categories | length %}
+    <li class="menu-box"><span class="title-list the-loai-title">{{ widget.title | safe }}</span>
+      <ul class="the-loai">
+         {% for category in categories %}
+        <li><a href="/blog/posts/categories/{{ category.alias }}/{{ category.id }}">{{ category.name }}</a></li>
+         {% endfor %}
+      </ul>
+    </li>
+
+{% endif %}

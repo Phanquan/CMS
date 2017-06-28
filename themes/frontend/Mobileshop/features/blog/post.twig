@@ -1,0 +1,34 @@
+{% extends '_layout.' + getConfig('viewExtension') %} {% block head %}
+<link href="/frontend/Mobileshop/assets/css/danh-sach-style.css" rel="stylesheet">
+<link href="/frontend/Mobileshop/assets/css/tin-tuc-style.css" rel="stylesheet">
+<link href="/frontend/Mobileshop/assets/css/bai-viet-style.css" rel="stylesheet"> {% endblock %} {% block content %}
+<section class="container" id="content-page">
+  <div class="row mot-hang">
+    <a href="/blog/posts" class="big-title">TIN CÔNG NGHỆ</a>
+    <span></span>
+  </div>
+  <!-- end -row -->
+  <!-- THANH TIÊU ĐỀ //////////////////////////////////////////////////////////////////////// -->
+
+  <div class="row">
+    <div class="col-md-9">
+      <h1>{{ post.title }}</h1>
+      <span>{{ post.published_at | moment('DD-MM-YYYY') }}</span>
+      <p>{{ post.full_text | safe }} </p>
+    </div>
+    <!--BLOG CATEGORIES-->
+    <aside class="col-md-offset-1 col-md-2 list-menu-box">
+      <ul>
+        {{ getSidebar("right-sidebar") | async | safe }}
+      </ul>
+    </aside>
+    <!--END BLOG CATEGORIES-->
+    <!-- end list-menu-box -->
+  </div>
+  <!-- end -row -->
+
+<!--Recommended Posts -->
+   {{ getSidebar("bottom-posts") | async | safe }}
+<!--End Recommended Posts -->
+</section>
+{% endblock %}
